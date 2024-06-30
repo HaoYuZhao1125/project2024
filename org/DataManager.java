@@ -51,6 +51,7 @@ public class DataManager {
 				String name = (String)data.get("name");
 				String description = (String)data.get("description");
 				Organization org = new Organization(fundId, name, description);
+				org.setPassword(password);
 
 				JSONArray funds = (JSONArray)data.get("funds");
 				Iterator it = funds.iterator();
@@ -197,7 +198,62 @@ public class DataManager {
         }
     }
 
-	public String parseDateFormat(String date) {
+	public String updateOrgsPassword(String OrgId, String Password) {
+		if (OrgId == null || OrgId.isEmpty()) {
+			return "Invalid Organization ID.";
+		}
+		if (Password == null || Password.isEmpty()) {
+			return "Invalid Password.";
+		}
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", OrgId);
+			map.put("password", Password);
+			String response = client.makeRequest("/updateOrgPassword", map);
+			if (response == null) {
+				throw new IllegalStateException("Error in communicating with server");
+			}
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String) json.get("status");
+
+			return status.equals("success")? "success": "fail";
+		} catch (Exception e) {
+			return "Error in communicating with server";
+		}
+	}
+
+	public String updateOrg(String OrgId, String name, String description) {
+		if (OrgId == null || OrgId.isEmpty()) {
+			return "Invalid Organization ID.";
+		}
+		if (name == null || name.isEmpty()) {
+			return "Invalid name.";
+		}
+		if (description == null || description.isEmpty()) {
+			return "Invalid description.";
+		}
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("id", OrgId);
+			map.put("name", name);
+			map.put("description", description);
+			String response = client.makeRequest("/updateOrg", map);
+			if (response == null) {
+				throw new IllegalStateException("Error in communicating with server");
+			}
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String) json.get("status");
+
+			return status.equals("success")? "success": "fail";
+		} catch (Exception e) {
+			return "Error in communicating with server";
+		}
+	}
+
+	// helper function
+	private String parseDateFormat(String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 		Date d = null;
 		try {
