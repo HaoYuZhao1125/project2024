@@ -12,7 +12,133 @@ public class UserInterface {
 		this.org = org;
 	}
 
+	public boolean tryAgain() {
+		System.out.println("Would you like to try again? (y/n)");
+		return "y".equals(in.nextLine());
+	}
+
 	public void start() {
+
+		// register or login
+		if (org == null) {
+			System.out.println("\n\n");
+			System.out.println("Which would you like to choose?");
+			System.out.println("1. login");
+			System.out.println("2. create a new organization");
+
+			int choice;
+			while (true) {
+				try {
+					choice = Integer.parseInt(in.nextLine());
+					if (choice != 1 && choice != 2) {
+						System.out.println("Please enter a valid fund number: ");
+						continue;
+					}
+
+					break;
+				} catch (Exception e) {
+					System.out.println("Please enter an Integer:");
+				}
+			}
+
+			if (choice == 1) {
+				while (true) {
+					try {
+						System.out.println("Please enter the login name: ");
+						String loginName = in.nextLine();
+						System.out.println("Please enter the password: ");
+						String password = in.nextLine();
+						org = dataManager.attemptLogin(loginName, password);
+						if (org == null) {
+							throw new Exception();
+						}
+
+						break;
+					} catch (Exception e) {
+						System.out.println("Login failed.");
+						if (!tryAgain()) {
+							System.out.println("Good bye!");
+							return;
+						}
+					}
+				}
+			} else {
+				while (true) {
+					try {
+						String loginName;
+						System.out.println("Please enter the login name: ");
+						while (true) {
+							loginName = in.nextLine().trim();
+							if (loginName.isEmpty()) {
+								System.out.println("Please enter a valid login name: ");
+								continue;
+							}
+							break;
+						}
+
+						String password;
+						System.out.println("Please enter the password: ");
+						while (true) {
+							password = in.nextLine().trim();
+							if (password.isEmpty()) {
+								System.out.println("Please enter a valid password: ");
+								continue;
+							}
+							break;
+						}
+
+						String organizationName;
+						System.out.println("Please enter the organization name: ");
+						while (true) {
+							organizationName = in.nextLine().trim();
+							if (organizationName.isEmpty()) {
+								System.out.println("Please enter a valid organization name: ");
+								continue;
+							}
+							break;
+						}
+
+						String description;
+						System.out.println("Please enter the organization description: ");
+						while (true) {
+							description = in.nextLine().trim();
+							if (description.isEmpty()) {
+								System.out.println("Please enter a valid organization description: ");
+								continue;
+							}
+							break;
+						}
+
+						int code = -1;
+						while (code != 0) {
+							code = dataManager.createOrganization(loginName, password, organizationName, description);
+							if (code == 1) {
+								System.out.println("Duplicate login name. Please change one: ");
+								while (true) {
+									loginName = in.nextLine().trim();
+									if (loginName.isEmpty()) {
+										System.out.println("Please enter a valid login name: ");
+										continue;
+									}
+									break;
+								}
+							}
+						}
+						System.out.println("Creation success!");
+						org = dataManager.attemptLogin(loginName, password);
+
+						break;
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						System.out.println("Creation failed.");
+						if (!tryAgain()) {
+							System.out.println("Good bye!");
+							return;
+						}
+					}
+				}
+			}
+		}
 
 		while (true) {
 			System.out.println("\n\n");
@@ -283,16 +409,23 @@ public class UserInterface {
 
 	public static void main(String[] args) {
 		DataManager ds = new DataManager(new WebClient("localhost", 3001));
-		Scanner in = new Scanner(System.in);
 
-		//User input their own login and password
-		System.out.print("Enter your login:");
-		String login = in.nextLine().trim();
-		System.out.print("Enter your password: ");
-		String password = in.nextLine().trim();
+		String login = "";
+		String password = "";
+
+		if (args.length == 2) {
+			login = args[0];
+			password = args[1];
+		}
 
 		while (true) {
 			try {
+				if ("".equals(login) || "".equals(password)) {
+					UserInterface ui = new UserInterface(ds, null);
+					ui.start();
+					return;
+				}
+
 				Organization org = ds.attemptLogin(login, password);
 
 				if (org == null) {
@@ -306,6 +439,7 @@ public class UserInterface {
 			} catch (IllegalArgumentException | IllegalStateException e) {
 				System.out.println(e.getMessage());
 				System.out.println("Would you like to retry? (y/n)");
+				Scanner in = new Scanner(System.in);
 				String retry = in.nextLine().trim().toLowerCase();
 				if (!retry.equals("y")) {
 					System.out.println("Program terminated.");
