@@ -227,18 +227,18 @@ public class UserInterface {
 		String description = "";
 		long target = -1;
 
-		while (name.isBlank()) {
+		while (name.trim().isEmpty()) {
 			System.out.print("Enter the fund name: ");
 			name = in.nextLine().trim();
-			if (name.isBlank()) {
+			if (name.trim().isEmpty()) {
 				System.out.println("Fund name cannot be blank. Please enter a valid name.");
 			}
 		}
 
-		while (description.isBlank()) {
+		while (description.trim().isEmpty()) {
 			System.out.print("Enter the fund description: ");
 			description = in.nextLine().trim();
-			if (description.isBlank()) {
+			if (description.trim().isEmpty()) {
 				System.out.println("Fund description cannot be blank. Please enter a valid description.");
 			}
 		}
@@ -285,7 +285,7 @@ public class UserInterface {
 		System.out.println("1. View individual donations");
 		System.out.println("2. View aggregated donations by contributor");
 		System.out.println("3. Delete this fund");
-
+		System.out.println("4. Make a donation on behalf of a contributor");
 		int choice = in.nextInt();
 		in.nextLine();
 
@@ -324,6 +324,9 @@ public class UserInterface {
 					}
 				}
 				break;
+			case 4:
+				makeDonation(fund);
+				break;
 
 			default:
 				System.out.println("Invalid choice. Please enter a valid option.");
@@ -333,6 +336,44 @@ public class UserInterface {
 		System.out.println("Press the Enter key to go back to the listing of funds");
 		in.nextLine();
 	}
+
+	private void makeDonation(Fund fund) {
+		System.out.print("Enter the contributor's ID: ");
+		String contributorId = in.nextLine().trim();
+		if (contributorId.isEmpty()) {
+			System.out.println("Contributor ID cannot be empty.");
+			return;
+		}
+
+		long amount = -1;
+		while (true) {
+			System.out.print("Enter the donation amount: ");
+			if (in.hasNextLong()) {
+				amount = in.nextLong();
+				in.nextLine();
+				if (amount < 0) {
+					System.out.println("Donation amount cannot be negative.");
+				} else {
+					break;
+				}
+			} else {
+				System.out.println("Please enter a valid numeric value.");
+				in.nextLine();
+			}
+		}
+
+		try {
+			String result = dataManager.makeDonation(fund.getId(), contributorId, amount);
+			if (result.equals("success")) {
+				System.out.println("Donation made successfully.");
+			} else {
+				System.out.println("Failed to make donation: " + result);
+			}
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			System.out.println("Error making donation: " + e.getMessage());
+		}
+	}
+
 
 	public void updateOrgPassword() {
 		System.out.print("Enter your current password: ");
