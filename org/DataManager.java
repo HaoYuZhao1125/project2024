@@ -56,7 +56,7 @@ public class DataManager {
 				JSONArray funds = (JSONArray)data.get("funds");
 				Iterator it = funds.iterator();
 				while(it.hasNext()){
-					JSONObject fund = (JSONObject) it.next(); 
+					JSONObject fund = (JSONObject) it.next();
 					fundId = (String)fund.get("_id");
 					name = (String)fund.get("name");
 					description = (String)fund.get("description");
@@ -135,7 +135,7 @@ public class DataManager {
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("Error in communicating with server", e);
-		}	
+		}
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class DataManager {
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("Error in communicating with server", e);
-		}	
+		}
 	}
 
 	public String deleteFund(String fundId) {
@@ -195,8 +195,40 @@ public class DataManager {
 			return status.equals("success") ? "success" : "error";
 		} catch (Exception e) {
 			return "Error: exception occurred.";
-        }
-    }
+		}
+	}
+
+	public String makeDonation(String fundId, String contributorId, long amount) {
+		if (fundId == null || contributorId == null) {
+			throw new IllegalArgumentException("Contributor ID and Fund ID cannot be null");
+		}
+		if (fundId.isEmpty() || contributorId.isEmpty()) {
+			return "Contributor ID and Fund ID cannot be empty";
+		}
+		if (amount < 0) {
+			return "Donation amount must be positive";
+		}
+
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("fund", fundId);
+			map.put("contributor", contributorId);
+			map.put("amount", amount);
+			String response = client.makeRequest("/makeDonation", map);
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String) json.get("status");
+
+			if (status.equals("success")) {
+				return "success";
+			} else {
+				return (String) json.get("data");
+			}
+		} catch (Exception e) {
+			return "Error in communicating with server: " + e.getMessage();
+		}
+	}
 
 	public String updateOrgsPassword(String OrgId, String Password) {
 		if (OrgId == null || OrgId.isEmpty()) {
