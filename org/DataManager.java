@@ -210,9 +210,7 @@ public class DataManager {
 			map.put("id", OrgId);
 			map.put("password", Password);
 			String response = client.makeRequest("/updateOrgPassword", map);
-			if (response == null) {
-				throw new IllegalStateException("Error in communicating with server");
-			}
+
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);
 			String status = (String) json.get("status");
@@ -239,9 +237,7 @@ public class DataManager {
 			map.put("name", name);
 			map.put("description", description);
 			String response = client.makeRequest("/updateOrg", map);
-			if (response == null) {
-				throw new IllegalStateException("Error in communicating with server");
-			}
+
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(response);
 			String status = (String) json.get("status");
