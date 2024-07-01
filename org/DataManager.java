@@ -252,6 +252,32 @@ public class DataManager {
 		}
 	}
 
+	public int createOrganization(String loginName, String password, String organizationName, String description) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("login", loginName);
+		map.put("password", password);
+		map.put("name", organizationName);
+		map.put("description", description);
+
+		try {
+			String response = client.makeRequest("/createOrg", map);
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(response);
+			String status = (String) json.get("status");
+			String data = (String) json.get("data");
+			if (!status.equals("success")) {
+				if (data.contains("login_1 dup key")) {
+					return 1;
+				}
+				throw new RuntimeException();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error in communicating with server", e);
+		}
+
+		return 0;
+	}
+
 	// helper function
 	private String parseDateFormat(String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);

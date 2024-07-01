@@ -391,6 +391,30 @@ app.use('/updateOrg', (req, res) => {
 });
 
 
+/*
+Handle the form submission to create a new organization
+*/
+app.use('/createOrg', (req, res) => {
+
+	var org = new Organization({
+		login: req.query.login,
+		password: req.query.password,
+		name: req.query.name,
+		description: req.query.description,
+		funds: []
+	    });
+
+	org.save( (err) => {
+		if (err) {
+		    res.json({'status' : 'error', 'data' : err.message});
+		}
+		else {
+		    res.json({'status' : 'success', 'data': ''});
+		}
+	    });
+
+    });
+
 /********************************************************/
 
 
