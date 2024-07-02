@@ -45,8 +45,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         if (!newPassword.equals(confirmPassword)) {
             Toast.makeText(this, "New passwords do not match", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this, MenuActivity.class);
-            startActivity(intent);
+            Intent i = new Intent(this, MenuActivity.class);
+            startActivity(i);
         }
 
         Contributor contributor = MainActivity.contributor;
@@ -57,8 +57,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
             if (success) {
                 contributor.setPassword(newPassword);
                 Toast.makeText(this, "Password updated successfully", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(this, MenuActivity.class);
-                startActivity(intent);
+                Intent i = new Intent(this, MenuActivity.class);
+                startActivity(i);
             } else {
                 Toast.makeText(this, "Failed to update password", Toast.LENGTH_LONG).show();
             }
