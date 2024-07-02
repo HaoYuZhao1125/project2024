@@ -385,10 +385,26 @@ app.use('/updateOrg', (req, res) => {
 		if (err) {
 			res.json({'status': 'error', 'data': err});
 		} else {
-			res.json({'status': 'success', 'data': err});
+			res.json({'status': 'success', 'data': result});
 		}
 	});
 });
+
+app.use('/updateContributorPassword', (req, res) => {
+
+    var filter = {"_id": req.query.id};
+    var update = {"password": req.query.password};
+    var action = {"$set": update};
+
+    Contributor.findOneAndUpdate(filter, action, {new: true}, (err, result) => {
+        if (err) {
+            res.json({'status': 'error', 'data': err});
+        } else {
+            res.json({'status': 'success', 'data': result});
+        }
+    });
+});
+
 
 
 /*

@@ -15,8 +15,9 @@ public class Contributor implements Serializable {
     private String creditCardExpiryYear;
     private String creditCardPostCode;
     private List<Donation> donations;
+    private String passWord;
 
-    public Contributor(String id, String name, String email, String creditCardNumber, String creditCardCVV, String creditCardExpiryMonth, String creditCardExpiryYear, String creditCardPostCode) {
+    public Contributor(String id, String name, String email, String creditCardNumber, String creditCardCVV, String creditCardExpiryMonth, String creditCardExpiryYear, String creditCardPostCode, String passWord) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -25,6 +26,7 @@ public class Contributor implements Serializable {
         this.creditCardExpiryMonth = creditCardExpiryMonth;
         this.creditCardExpiryYear = creditCardExpiryYear;
         this.creditCardPostCode = creditCardPostCode;
+        this.passWord = passWord;
         donations = new LinkedList<>();
     }
 
@@ -66,5 +68,13 @@ public class Contributor implements Serializable {
 
     public void setDonations(List<Donation> donations) {
         this.donations = donations;
+    }
+
+    public String getPassword() {
+        return passWord;
+    }
+
+    public void setPassword(String password) {
+        this.passWord = password;
     }
 }

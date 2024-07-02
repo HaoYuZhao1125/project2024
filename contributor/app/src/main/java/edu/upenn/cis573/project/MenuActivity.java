@@ -34,4 +34,10 @@ public class MenuActivity extends AppCompatActivity {
         Intent i = new Intent(this, ViewDonationActivityByFund.class);
         startActivity(i);
     }
+
+    public void onChangePasswordButtonClick(View view) {
+        Intent i = new Intent(this, ChangePasswordActivity.class);
+        startActivity(i);
+    }
+
 }
