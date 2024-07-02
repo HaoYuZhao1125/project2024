@@ -47,6 +47,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
             Toast.makeText(this, "New passwords do not match", Toast.LENGTH_LONG).show();
             Intent i = new Intent(this, MenuActivity.class);
             startActivity(i);
+            return;
         }
 
         Contributor contributor = MainActivity.contributor;
