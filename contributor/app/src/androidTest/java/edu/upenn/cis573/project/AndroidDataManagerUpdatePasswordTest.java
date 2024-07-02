@@ -60,16 +60,18 @@ public class AndroidDataManagerUpdatePasswordTest {
 
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testUpdatePassword_EmptyContributorId() {
         dm = new DataManager(new WebClient("10.0.2.2", 3001));
-        Assert.assertFalse(dm.updatePassword("", "password"));
+        dm.updatePassword("", "password");
+        Assert.fail("DataManager.updatePassword does not throw IllegalStateException when contributorid is empty");
     }
 
-    @Test
-    public void testUpdatePassword_EmptyPassword() {
+    @Test(expected=IllegalArgumentException.class)
+    public void testUpdatePassword_EmptyNewPassword() {
         dm = new DataManager(new WebClient("10.0.2.2", 3001));
-        Assert.assertFalse(dm.updatePassword("222", ""));
+        dm.updatePassword("login", "");
+        Assert.fail("DataManager.updatePassword does not throw IllegalStateException when newPassword is empty");
     }
 
     @Test
@@ -104,7 +106,5 @@ public class AndroidDataManagerUpdatePasswordTest {
         });
         dm.updatePassword("login", "password");
         Assert.fail("DataManager.updatePassword does not throw IllegalStateException when WebClient returns malformed JSON");
-
     }
-
 }

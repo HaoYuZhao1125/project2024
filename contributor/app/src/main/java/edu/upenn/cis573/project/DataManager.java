@@ -281,7 +281,7 @@ public class DataManager {
         }
 
         if (contributorId.isEmpty() || newPassword.isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("Contributor or new password is empty");
         }
 
         try {
