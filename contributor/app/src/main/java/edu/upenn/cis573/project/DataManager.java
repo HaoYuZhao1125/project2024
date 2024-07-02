@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -26,6 +27,7 @@ public class DataManager {
     /**
      * Attempt to log in to the Contributor account using the specified login and password.
      * This method uses the /findContributorByLoginAndPassword endpoint in the API
+     *
      * @return the Contributor object if successfully logged in, null otherwise
      */
     public Contributor attemptLogin(String login, String password) {
@@ -47,28 +49,29 @@ public class DataManager {
             }
 
             JSONObject json = new JSONObject(response);
-            String status = (String)json.get("status");
+            String status = (String) json.get("status");
 
-            if(status.equals("error")) {
+            if (status.equals("error")) {
                 throw new IllegalStateException("Error in response: " + json.getString("error"));
             }
 
             if (status.equals("success")) {
-                JSONObject data = (JSONObject)json.get("data");
-                String id = (String)data.get("_id");
-                String name = (String)data.get("name");
-                String email = (String)data.get("email");
-                String creditCardNumber = (String)data.get("creditCardNumber");
-                String creditCardCVV = (String)data.get("creditCardCVV");
-                String creditCardExpiryMonth = ((Integer)data.get("creditCardExpiryMonth")).toString();
-                String creditCardExpiryYear = ((Integer)data.get("creditCardExpiryYear")).toString();
-                String creditCardPostCode = (String)data.get("creditCardPostCode");
+                JSONObject data = (JSONObject) json.get("data");
+                String id = (String) data.get("_id");
+                String name = (String) data.get("name");
+                String email = (String) data.get("email");
+                String creditCardNumber = (String) data.get("creditCardNumber");
+                String creditCardCVV = (String) data.get("creditCardCVV");
+                String creditCardExpiryMonth = ((Integer) data.get("creditCardExpiryMonth")).toString();
+                String creditCardExpiryYear = ((Integer) data.get("creditCardExpiryYear")).toString();
+                String creditCardPostCode = (String) data.get("creditCardPostCode");
+                String passWord = (String) data.get("password");
 
-                Contributor contributor = new Contributor(id, name, email, creditCardNumber, creditCardCVV, creditCardExpiryYear, creditCardExpiryMonth, creditCardPostCode);
+                Contributor contributor = new Contributor(id, name, email, creditCardNumber, creditCardCVV, creditCardExpiryYear, creditCardExpiryMonth, creditCardPostCode, passWord);
 
                 List<Donation> donationList = new LinkedList<>();
 
-                JSONArray donations = (JSONArray)data.get("donations");
+                JSONArray donations = (JSONArray) data.get("donations");
 
                 for (int i = 0; i < donations.length(); i++) {
 
@@ -77,8 +80,8 @@ public class DataManager {
 
                     String fund = getFundName(fundId);
 
-                    String date = (String)jsonDonation.get("date");
-                    long amount = (Integer)jsonDonation.get("amount");
+                    String date = (String) jsonDonation.get("date");
+                    long amount = (Integer) jsonDonation.get("amount");
 
                     Donation donation = new Donation(fund, name, amount, date);
                     donationList.add(donation);
@@ -90,14 +93,14 @@ public class DataManager {
                 return contributor;
             }
             return null;
-        }
-        catch (Exception e) {
-           throw new IllegalStateException("Exception during login", e);
+        } catch (Exception e) {
+            throw new IllegalStateException("Exception during login", e);
         }
     }
 
     /**
      * Get the name of the fund with the specified ID using the /findFundNameById endpoint
+     *
      * @return the name of the fund if found, "Unknown fund" if not found, null if an error occurs
      */
     public String getFundName(String id) {
@@ -125,19 +128,18 @@ public class DataManager {
             }
 
             JSONObject json = new JSONObject(response);
-            String status = (String)json.get("status");
-            if(status.equals("error")) {
+            String status = (String) json.get("status");
+            if (status.equals("error")) {
                 throw new IllegalStateException("Error in response: " + json.getString("error"));
             }
             if (status.equals("success")) {
-                String name = (String)json.get("data");
+                String name = (String) json.get("data");
 
                 // update cache
                 fundNameCache.put(id, name);
 
                 return name;
-            }
-            else return "Unknown Fund";
+            } else return "Unknown Fund";
         } catch (Exception e) {
             throw new IllegalStateException("Exception during getFundName", e);
         }
@@ -146,6 +148,7 @@ public class DataManager {
     /**
      * Get information about all of the organizations and their funds.
      * This method uses the /allOrgs endpoint in the API
+     *
      * @return a List of Organization objects if successful, null otherwise
      */
     public List<Organization> getAllOrganizations() {
@@ -162,7 +165,7 @@ public class DataManager {
             }
 
             JSONObject json = new JSONObject(response);
-            String status = (String)json.getString("status");
+            String status = (String) json.getString("status");
 
             if (status.equals("error")) {
                 throw new IllegalStateException("Error in response: " + json.getString("error"));
@@ -172,7 +175,7 @@ public class DataManager {
 
                 List<Organization> organizations = new LinkedList<>();
 
-                JSONArray data = (JSONArray)json.get("data");
+                JSONArray data = (JSONArray) json.get("data");
 
                 for (int i = 0; i < data.length(); i++) {
 
@@ -213,8 +216,7 @@ public class DataManager {
             }
             return null;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Exception during getAllOrganizations", e);
         }
     }
@@ -222,6 +224,7 @@ public class DataManager {
     /**
      * Make a donation to the specified fund for the specified amount.
      * This method uses the /makeDonation endpoint in the API
+     *
      * @return true if successful, false otherwise
      */
     public boolean makeDonation(String contributorId, String fundId, String amount) {
@@ -249,18 +252,55 @@ public class DataManager {
             if (response == null) {
                 throw new IllegalStateException("WebClient returned null");
             }
-            
+
             JSONObject json = new JSONObject(response);
-            String status = (String)json.get("status");
+            String status = (String) json.get("status");
 
             if (!status.equals("success")) {
                 throw new IllegalStateException("Error in reponse: " + json.getString("error"));
             }
             return true;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Exception during makeDonation");
+        }
+    }
+
+    /**
+     * Update the password of the specified Contributor.
+     * This method uses the /updatePassword endpoint in the API
+     *
+     * @return true if successful, false otherwise
+     */
+    public boolean updatePassword(String contributorId, String newPassword) {
+        if (client == null) {
+            throw new IllegalStateException("WebClient is null");
+        }
+        if (contributorId == null || newPassword == null) {
+            throw new IllegalArgumentException("Contributor or new password is null");
+        }
+
+        if (contributorId.isEmpty() || newPassword.isEmpty()) {
+            return false;
+        }
+
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", contributorId);
+            map.put("password", newPassword);
+            String response = client.makeRequest("/updateContributorPassword", map);
+            if (response == null) {
+                throw new IllegalStateException("WebClient returned null");
+            }
+            JSONObject json = new JSONObject(response);
+            String status = (String) json.get("status");
+            if (!status.equals("success")) {
+                throw new IllegalStateException("Error in response: " + json.getString("error"));
+            }
+            return true;
+
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage());
         }
     }
 }
