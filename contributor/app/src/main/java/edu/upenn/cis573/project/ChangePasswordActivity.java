@@ -25,6 +25,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         if (!oldPassword.equals(contributor.getPassword())) {
             Toast.makeText(this, "Old password is incorrect", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MenuActivity.class);
+            startActivity(intent);
+
         } else {
             findViewById(R.id.new_passwordField).setVisibility(View.VISIBLE);
             findViewById(R.id.confirm_new_passwordField).setVisibility(View.VISIBLE);
@@ -42,7 +45,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
         if (!newPassword.equals(confirmPassword)) {
             Toast.makeText(this, "New passwords do not match", Toast.LENGTH_LONG).show();
-            return;
+            Intent intent = new Intent(this, MenuActivity.class);
+            startActivity(intent);
         }
 
         Contributor contributor = MainActivity.contributor;
