@@ -1,4 +1,5 @@
 Project Phase 3 Write-up
+
 Q1.
 
 Tasks that we would like graded for this phase are 3.1, 3.2, 3.3, 3.4, 3.6
@@ -20,8 +21,10 @@ A new API called updateOrgPassword has been created in api.js, this allows users
 
 Task 3.3
 Created a new API in api.js called updateOrg, which allows users to change the name and description of their organization and update this data in Mongodb. In datamanager, a new method called updateOrg is created to call the updateOrg API to update the name and description. Finally, a new method called updateOrg is created in the userinterface to direct the user to change their name and description and call updateOrg in the datamanager to update the data. Also optimized the interaction logic with the user in the userinterface to make the overall operation more logical.
+
 Task 3.4
 Created "makeDonation" method in "DataManager" class that allows making a donation to a specified fund on behalf of a contributor. It includes defensive checks to ensure that the inputs are not null or invalid and throws exceptions if any required parameter is invalid. Additionally, comprehensive JUnit tests were created to validate various scenarios, such as successful donations, invalid inputs, and exception handling. The user interface was also updated to include fields for entering onBehalfOfContributorId when making a donation, ensuring that error messages are displayed appropriately for invalid inputs. If the user successfully makes a donation, then there will be the listing of all the donations for that fund showing.
+
 Task3.6
 Modified MenuActivity.java to add a new button called “change password” at the MenuActivity screen. Accordingly, a new button is added to the activity_menu.xml in order to display the button. A new java class ChangePasswordActivity.java and its layout xml “activity_change_password.xml are added. Once the user clicks on the “change password” button, they will be directed to another page, which will prompt them to verify their old password. if it is correctly entered, the app will prompt them to enter the new password twice; 
 if the two entries match, the user’s ID and new password should be sent to the server using the RESTful API (api.js) so that it can update the contributor’s password; 
